@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>💖 Carta de Amor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin:0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#ffc0cb,#ffe4e1);
+  overflow:hidden;
+}
+
+/* Corazones suaves */
+canvas {
+  position: fixed;
+  top:0;
+  left:0;
+  z-index:0;
+}
+
+/* Contenedor */
+.app {
+  position: relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+
+/* Sobre */
+.envelope {
+  width:320px;
+  height:220px;
+  background:white;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  position:relative;
+  cursor:pointer;
+  transition: transform .5s;
+}
+
+.envelope:hover {
+  transform: scale(1.05);
+}
+
+/* tapa */
+.flap {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#ff9bb3;
+  clip-path: polygon(0 0, 50% 50%, 100% 0);
+  transition: transform .6s ease;
+  transform-origin: top;
+}
+
+/* carta */
+.letter {
+  position:absolute;
+  width:90%;
+  height:85%;
+  background:#fff;
+  top:7%;
+  left:5%;
+  border-radius:10px;
+  padding:15px;
+  transform: translateY(100%);
+  transition: .6s;
+  overflow:auto;
+}
+
+.open .flap {
+  transform: rotateX(180deg);
+}
+
+.open .letter {
+  transform: translateY(0);
+}
+
+/* texto */
+.message {
+  font-family: 'Great Vibes', cursive;
+  font-size:24px;
+  color:#444;
+}
+
+/* controles */
+.controls {
+  margin-top:20px;
+  text-align:center;
+}
+
+input {
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  width:200px;
+  outline:none;
+}
+
+button {
+  margin:5px;
+  padding:10px 15px;
+  border:none;
+  border-radius:20px;
+  background:#ff6f91;
+  color:white;
+  cursor:pointer;
+  transition:.3s;
+}
+
+button:hover {
+  background:#ff3d6d;
+}
+
+/* galería */
+.gallery {
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.gallery img {
+  width:80px;
+  height:80px;
+  object-fit:cover;
+  border-radius:10px;
+  box-shadow:0 5px 10px rgba(0,0,0,.2);
+}
+
+/* contador */
+#countdown {
+  margin-top:10px;
+  font-size:14px;
+  color:#555;
+}
+
+/* poema */
+#poem {
+  font-style:italic;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="hearts"></canvas>
+
+<div class="app">
+
+<h1>💖 Para Ti 💖</h1>
+
+<div class="envelope" id="envelope" onclick="openCard()">
+  <div class="flap"></div>
+  <div class="letter">
+    <div class="message" id="msg">
+      Haz clic y escribe algo especial...
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <input id="inputMsg" placeholder="Escribe tu mensaje...">
+  <br>
+  <button onclick="setMessage()">Guardar</button>
+  <button onclick="toggleMusic()">🎻 Música</button>
+  <button onclick="generatePoem()">Poema secreto</button>
+
+  <div id="countdown"></div>
+
+  <input type="file" multiple onchange="loadImages(event)">
+  <div class="gallery" id="gallery"></div>
+
+  <p id="poem"></p>
+</div>
+
+<audio id="music" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
+</audio>
+
+</div>
+
+<script>
+// abrir carta
+function openCard(){
+  document.getElementById("envelope").classList.toggle("open");
+}
+
+// mensaje
+function setMessage(){
+  let text = document.getElementById("inputMsg").value;
+  document.getElementById("msg").innerText = text;
+}
+
+// música
+let playing=false;
+function toggleMusic(){
+  let m=document.getElementById("music");
+  playing?m.pause():m.play();
+  playing=!playing;
+}
+
+// poema
+function generatePoem(){
+  const poems=[
+    "Eres mi casualidad favorita.",
+    "Si el amor tuviera forma, sería tu sonrisa.",
+    "Entre millones de estrellas, siempre te elegiría a ti."
+  ];
+  document.getElementById("poem").innerText =
+    poems[Math.floor(Math.random()*poems.length)];
+}
+
+// galería
+function loadImages(e){
+  let g=document.getElementById("gallery");
+  for(let f of e.target.files){
+    let img=document.createElement("img");
+    img.src=URL.createObjectURL(f);
+    g.appendChild(img);
+  }
+}
+
+// cuenta regresiva
+let target=new Date("Feb 14, 2027 00:00:00").getTime();
+setInterval(()=>{
+  let now=new Date().getTime();
+  let d=Math.floor((target-now)/(1000*60*60*24));
+  document.getElementById("countdown").innerText=
+    "Faltan "+d+" días 💘";
+},1000);
+
+// corazones canvas
+const canvas=document.getElementById("hearts");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let hearts=[];
+for(let i=0;i<50;i++){
+  hearts.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    size:Math.random()*5+2,
+    speed:Math.random()*1+0.5
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="rgba(255,105,180,0.7)";
+  hearts.forEach(h=>{
+    ctx.beginPath();
+    ctx.arc(h.x,h.y,h.size,0,Math.PI*2);
+    ctx.fill();
+    h.y+=h.speed;
+    if(h.y>canvas.height) h.y=0;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
