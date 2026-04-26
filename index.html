@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Para Ti 💖</title>
+<title>Para Lizbet 💖</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
 
@@ -27,9 +27,7 @@ body{
   transition:opacity 1s;
 }
 
-.active{
-  opacity:1;
-}
+.active{ opacity:1; }
 
 h1{
   font-family:'Great Vibes',cursive;
@@ -46,7 +44,6 @@ button{
   margin-top:20px;
 }
 
-/* carta */
 .envelope{
   width:300px;
   height:200px;
@@ -68,26 +65,28 @@ button{
   color:#444;
   transform:translateY(100%);
   transition:.6s;
-  overflow:auto;
 }
 
-.open .letter{
-  transform:translateY(0);
-}
+.open .letter{ transform:translateY(0); }
 
-/* typing */
 .typing{
   font-family:'Great Vibes',cursive;
   font-size:26px;
 }
 
-/* final */
-.final{
-  font-size:40px;
-  font-family:'Great Vibes',cursive;
+/* galería */
+.gallery img{
+  width:90px;
+  margin:5px;
+  border-radius:10px;
 }
 
-/* corazones */
+.final{
+  font-size:38px;
+  font-family:'Great Vibes',cursive;
+  text-align:center;
+}
+
 canvas{
   position:fixed;
   top:0;
@@ -103,7 +102,7 @@ canvas{
 
 <!-- ESCENA 1 -->
 <div class="scene active" id="scene1">
-  <h1>💖 Tengo algo para ti...</h1>
+  <h1>💖 Lizbet, tengo algo para ti...</h1>
   <button onclick="nextScene(1)">Abrir</button>
 </div>
 
@@ -118,9 +117,18 @@ canvas{
 
 <!-- ESCENA 3 -->
 <div class="scene" id="scene3">
-  <h1>📸 Nuestros momentos</h1>
+  <h1>📸 Nuestros recuerdos</h1>
+
+  <!-- OPCIÓN 1: subir fotos -->
   <input type="file" multiple onchange="loadImages(event)">
-  <div id="gallery"></div>
+
+  <!-- OPCIÓN 2: fotos fijas -->
+  <div class="gallery" id="gallery">
+    <!-- Cambia estas imágenes -->
+    <img src="foto1.jpg">
+    <img src="foto2.jpg">
+  </div>
+
   <button onclick="nextScene(3)">Continuar</button>
 </div>
 
@@ -134,21 +142,21 @@ canvas{
 </audio>
 
 <script>
-// cambiar escenas
+// escenas
 function nextScene(n){
   document.getElementById("scene"+n).classList.remove("active");
   document.getElementById("scene"+(n+1)).classList.add("active");
   if(n===1) startMusic();
 }
 
-// abrir carta
+// carta
 function openLetter(){
   document.querySelector(".envelope").classList.add("open");
-  typeText("Desde que llegaste, todo es más bonito... 💖\nEres mi lugar favorito en el mundo.");
-  setTimeout(()=>nextScene(2),6000);
+  typeText("Lizbet...\nDesde el 1 de mayo, ese día especial, supe que algo cambió.\nDesde entonces, cada momento contigo se siente único.\nEres esa persona que hace que todo tenga sentido... 💖");
+  setTimeout(()=>nextScene(2),7000);
 }
 
-// efecto escritura
+// escribir texto
 function typeText(text){
   let i=0;
   let el=document.getElementById("text");
@@ -159,21 +167,19 @@ function typeText(text){
   },50);
 }
 
-// galería
+// galería subida
 function loadImages(e){
   let g=document.getElementById("gallery");
   for(let f of e.target.files){
     let img=document.createElement("img");
     img.src=URL.createObjectURL(f);
-    img.style.width="80px";
-    img.style.margin="5px";
     g.appendChild(img);
   }
 }
 
 // final
 function showFinal(){
-  typeFinal("Te elegiría mil veces más... 💖");
+  typeFinal("Lizbet... 💖\nTe elegiría hoy, mañana y siempre.\nFeliz 1 de mayo.");
 }
 
 function typeFinal(text){
@@ -216,10 +222,8 @@ function draw(){
 }
 draw();
 
-// transición final automática
-setTimeout(()=>{nextScene(3);showFinal();},15000);
+setTimeout(()=>{nextScene(3);showFinal();},16000);
 </script>
 
 </body>
 </html>
-<!-- force deploy -->
