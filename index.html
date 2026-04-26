@@ -10,7 +10,7 @@
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background: radial-gradient(circle at top,#ffd6e0,#ff9bb3);
+  background: linear-gradient(135deg,#ffd6e0,#ff9bb3);
   overflow:hidden;
   color:#fff;
 }
@@ -19,19 +19,17 @@ body{
   position:absolute;
   width:100%;
   height:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  display:none;
   justify-content:center;
-  opacity:0;
-  transition:opacity 1s;
+  align-items:center;
+  flex-direction:column;
 }
 
-.active{ opacity:1; }
+.active{ display:flex; }
 
 h1{
   font-family:'Great Vibes',cursive;
-  font-size:48px;
+  font-size:40px;
 }
 
 button{
@@ -41,100 +39,65 @@ button{
   background:#fff;
   color:#ff4d6d;
   cursor:pointer;
-  margin-top:20px;
 }
 
 .envelope{
-  width:300px;
-  height:200px;
+  width:280px;
+  height:180px;
   background:#fff;
   border-radius:15px;
-  position:relative;
   cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
-
-.letter{
-  position:absolute;
-  width:90%;
-  height:85%;
-  background:#fff;
-  top:7%;
-  left:5%;
-  border-radius:10px;
-  padding:15px;
-  color:#444;
-  transform:translateY(100%);
-  transition:.6s;
-}
-
-.open .letter{ transform:translateY(0); }
 
 .typing{
   font-family:'Great Vibes',cursive;
-  font-size:26px;
+  font-size:24px;
+  color:#333;
+  padding:15px;
 }
 
-/* galería */
 .gallery img{
-  width:90px;
+  width:80px;
   margin:5px;
   border-radius:10px;
-}
-
-.final{
-  font-size:38px;
-  font-family:'Great Vibes',cursive;
-  text-align:center;
-}
-
-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:-1;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="hearts"></canvas>
-
 <!-- ESCENA 1 -->
 <div class="scene active" id="scene1">
   <h1>💖 Lizbet, tengo algo para ti...</h1>
-  <button onclick="nextScene(1)">Abrir</button>
+  <button onclick="start()">Abrir</button>
 </div>
 
 <!-- ESCENA 2 -->
 <div class="scene" id="scene2">
-  <div class="envelope" onclick="openLetter()">
-    <div class="letter">
-      <div class="typing" id="text"></div>
-    </div>
+  <div class="envelope" onclick="showMessage()">
+    💌 Toca para leer
   </div>
 </div>
 
 <!-- ESCENA 3 -->
 <div class="scene" id="scene3">
+  <div class="typing" id="text"></div>
+</div>
+
+<!-- ESCENA 4 -->
+<div class="scene" id="scene4">
   <h1>📸 Nuestros recuerdos</h1>
-
-  <!-- OPCIÓN 1: subir fotos -->
   <input type="file" multiple onchange="loadImages(event)">
-
-  <!-- OPCIÓN 2: fotos fijas -->
-  <div class="gallery" id="gallery">
-    <!-- Cambia estas imágenes -->
-    <img src="foto1.jpg">
-    <img src="foto2.jpg">
-  </div>
-
-  <button onclick="nextScene(3)">Continuar</button>
+  <div class="gallery" id="gallery"></div>
+  <button onclick="showFinal()">Continuar</button>
 </div>
 
 <!-- ESCENA FINAL -->
-<div class="scene" id="scene4">
-  <div class="final" id="finalText"></div>
+<div class="scene" id="scene5">
+  <h1 id="final"></h1>
 </div>
 
 <audio id="music" loop>
@@ -142,32 +105,42 @@ canvas{
 </audio>
 
 <script>
-// escenas
-function nextScene(n){
-  document.getElementById("scene"+n).classList.remove("active");
-  document.getElementById("scene"+(n+1)).classList.add("active");
-  if(n===1) startMusic();
+
+function changeScene(n){
+  document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
+  document.getElementById("scene"+n).classList.add("active");
 }
 
-// carta
-function openLetter(){
-  document.querySelector(".envelope").classList.add("open");
-  typeText("Lizbet...\nDesde el 1 de mayo, ese día especial, supe que algo cambió.\nDesde entonces, cada momento contigo se siente único.\nEres esa persona que hace que todo tenga sentido... 💖");
-  setTimeout(()=>nextScene(2),7000);
+// iniciar
+function start(){
+  changeScene(2);
+  document.getElementById("music").play().catch(()=>{});
+}
+
+// abrir carta
+function showMessage(){
+  changeScene(3);
+  typeText("Lizbet...\nDesde el 1 de mayo todo cambió.\nDesde ese día supe que tú eras especial.\nGracias por cada momento... 💖", ()=>{
+    setTimeout(()=>changeScene(4),3000);
+  });
 }
 
 // escribir texto
-function typeText(text){
+function typeText(text,callback){
   let i=0;
   let el=document.getElementById("text");
+  el.innerHTML="";
   let interval=setInterval(()=>{
     el.innerHTML+=text.charAt(i);
     i++;
-    if(i>=text.length) clearInterval(interval);
-  },50);
+    if(i>=text.length){
+      clearInterval(interval);
+      if(callback) callback();
+    }
+  },40);
 }
 
-// galería subida
+// galería
 function loadImages(e){
   let g=document.getElementById("gallery");
   for(let f of e.target.files){
@@ -179,50 +152,20 @@ function loadImages(e){
 
 // final
 function showFinal(){
-  typeFinal("Lizbet... 💖\nTe elegiría hoy, mañana y siempre.\nFeliz 1 de mayo.");
+  changeScene(5);
+  typeFinal("Lizbet 💖\nTe elegiría una y mil veces.\nFeliz 1 de mayo.");
 }
 
 function typeFinal(text){
   let i=0;
-  let el=document.getElementById("finalText");
+  let el=document.getElementById("final");
   let interval=setInterval(()=>{
     el.innerHTML+=text.charAt(i);
     i++;
     if(i>=text.length) clearInterval(interval);
-  },80);
+  },60);
 }
 
-// música
-function startMusic(){
-  document.getElementById("music").play();
-}
-
-// corazones
-const c=document.getElementById("hearts");
-const ctx=c.getContext("2d");
-c.width=window.innerWidth;
-c.height=window.innerHeight;
-
-let hearts=[];
-for(let i=0;i<40;i++){
-  hearts.push({x:Math.random()*c.width,y:Math.random()*c.height,s:Math.random()*4+2,v:Math.random()*1});
-}
-
-function draw(){
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle="rgba(255,255,255,0.6)";
-  hearts.forEach(h=>{
-    ctx.beginPath();
-    ctx.arc(h.x,h.y,h.s,0,Math.PI*2);
-    ctx.fill();
-    h.y+=h.v;
-    if(h.y>c.height) h.y=0;
-  });
-  requestAnimationFrame(draw);
-}
-draw();
-
-setTimeout(()=>{nextScene(3);showFinal();},16000);
 </script>
 
 </body>
