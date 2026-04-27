@@ -42,7 +42,6 @@ button{
   cursor:pointer;
 }
 
-/* carta */
 .envelope{
   width:280px;
   height:180px;
@@ -63,7 +62,6 @@ button{
   padding:15px;
 }
 
-/* fotos */
 #photo{
   width:260px;
   border-radius:15px;
@@ -77,69 +75,57 @@ button{
   opacity:1;
   transform:scale(1);
 }
-
-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:-1;
-}
 </style>
 </head>
 
 <body>
 
-<!-- ESCENA 1 -->
 <div class="scene active" id="scene1">
   <h1>💖 Lizbet, tengo algo para ti...</h1>
   <button onclick="start()">Abrir</button>
 </div>
 
-<!-- ESCENA 2 -->
 <div class="scene" id="scene2">
   <div class="envelope" onclick="showMessage()">
     💌 Toca para abrir
   </div>
 </div>
 
-<!-- ESCENA 3 -->
 <div class="scene" id="scene3">
   <div class="typing" id="text"></div>
 </div>
 
-<!-- ESCENA 4 (FOTOS) -->
 <div class="scene" id="scene4" onclick="nextPhoto()">
   <h1>📸 Nuestros recuerdos</h1>
   <img id="photo">
   <p>(toca la pantalla)</p>
 </div>
 
-<!-- ESCENA FINAL -->
 <div class="scene" id="scene5">
   <h1 id="final"></h1>
 </div>
 
+<!-- 🎵 Música -->
 <audio id="music" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
+  <source src="eternamente-bella.mp3" type="audio/mpeg">
 </audio>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
 
-// cambiar escena
 function changeScene(n){
   document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
   document.getElementById("scene"+n).classList.add("active");
 }
 
-// inicio
 function start(){
   changeScene(2);
-  document.getElementById("music").play().catch(()=>{});
+  let music = document.getElementById("music");
+  music.volume = 0.6;
+  music.play().catch(()=>{});
 }
 
-// carta
 function showMessage(){
   changeScene(3);
   typeText("Lizbet...\nDesde el 1 de mayo todo cambió.\nGracias por cada momento juntos.\nEres lo mejor que me ha pasado 💖", ()=>{
@@ -147,7 +133,6 @@ function showMessage(){
   });
 }
 
-// efecto escritura
 function typeText(text,callback){
   let i=0;
   let el=document.getElementById("text");
@@ -162,7 +147,6 @@ function typeText(text,callback){
   },40);
 }
 
-// FOTOS
 const photos = [
   "fot1.jpg","fot2.jpg","fot3.jpg","fot4.jpg","fot5.jpg",
   "fot6.jpg","fot7.jpg","fot8.jpg","fot9.jpg","fot10.jpg"
@@ -189,7 +173,6 @@ function nextPhoto(){
   }
 }
 
-// texto final
 function typeFinal(text,callback){
   let i=0;
   let el=document.getElementById("final");
@@ -203,7 +186,6 @@ function typeFinal(text,callback){
   },60);
 }
 
-// confetti
 function showConfetti(){
   const duration = 4000;
   const end = Date.now() + duration;
