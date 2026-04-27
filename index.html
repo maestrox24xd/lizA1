@@ -23,6 +23,7 @@ body{
   justify-content:center;
   align-items:center;
   flex-direction:column;
+  text-align:center;
 }
 
 .active{ display:flex; }
@@ -41,15 +42,18 @@ button{
   cursor:pointer;
 }
 
+/* carta */
 .envelope{
   width:280px;
   height:180px;
   background:#fff;
   border-radius:15px;
-  cursor:pointer;
   display:flex;
   justify-content:center;
   align-items:center;
+  cursor:pointer;
+  color:#ff4d6d;
+  font-size:20px;
 }
 
 .typing{
@@ -59,10 +63,26 @@ button{
   padding:15px;
 }
 
-.gallery img{
-  width:80px;
-  margin:5px;
-  border-radius:10px;
+/* fotos */
+#photo{
+  width:260px;
+  border-radius:15px;
+  display:none;
+  opacity:0;
+  transform:scale(0.8);
+  transition: all .6s ease;
+}
+
+#photo.show{
+  opacity:1;
+  transform:scale(1);
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
 }
 </style>
 </head>
@@ -78,7 +98,7 @@ button{
 <!-- ESCENA 2 -->
 <div class="scene" id="scene2">
   <div class="envelope" onclick="showMessage()">
-    💌 Toca para leer
+    💌 Toca para abrir
   </div>
 </div>
 
@@ -87,14 +107,11 @@ button{
   <div class="typing" id="text"></div>
 </div>
 
-<!-- ESCENA 4 -->
-<div class="scene" id="scene4">
+<!-- ESCENA 4 (FOTOS) -->
+<div class="scene" id="scene4" onclick="nextPhoto()">
   <h1>📸 Nuestros recuerdos</h1>
-  <input type="file" multiple onchange="loadImages(event)">
-  <div class="gallery" id="gallery">
-  <img src="fot3.JPG">
-</div>
-  <button onclick="showFinal()">Continuar</button>
+  <img id="photo">
+  <p>(toca la pantalla)</p>
 </div>
 
 <!-- ESCENA FINAL -->
@@ -106,28 +123,31 @@ button{
   <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
 </audio>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <script>
 
+// cambiar escena
 function changeScene(n){
   document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
   document.getElementById("scene"+n).classList.add("active");
 }
 
-// iniciar
+// inicio
 function start(){
   changeScene(2);
   document.getElementById("music").play().catch(()=>{});
 }
 
-// abrir carta
+// carta
 function showMessage(){
   changeScene(3);
-  typeText("Lizbet...\nDesde el 1 de mayo todo cambió.\nDesde ese día supe que tú eras especial.\nGracias por cada momento... 💖", ()=>{
+  typeText("Lizbet...\nDesde el 1 de mayo todo cambió.\nGracias por cada momento juntos.\nEres lo mejor que me ha pasado 💖", ()=>{
     setTimeout(()=>changeScene(4),3000);
   });
 }
 
-// escribir texto
+// efecto escritura
 function typeText(text,callback){
   let i=0;
   let el=document.getElementById("text");
@@ -142,30 +162,55 @@ function typeText(text,callback){
   },40);
 }
 
-// galería
-function loadImages(e){
-  let g=document.getElementById("gallery");
-  for(let f of e.target.files){
-    let img=document.createElement("img");
-    img.src=URL.createObjectURL(f);
-    g.appendChild(img);
+// FOTOS
+const photos = [
+  "fot3.jpg"
+];
+
+let index = 0;
+
+function nextPhoto(){
+  let img = document.getElementById("photo");
+
+  if(index < photos.length){
+    img.classList.remove("show");
+
+    setTimeout(()=>{
+      img.src = photos[index];
+      img.style.display = "block";
+      img.classList.add("show");
+    },100);
+
+    index++;
+  } else {
+    changeScene(5);
+    typeFinal("💖 Por fin logramos un año 💖", showConfetti);
   }
 }
 
-// final
-function showFinal(){
-  changeScene(5);
-  typeFinal("Lizbet 💖\nTe elegiría una y mil veces.\nFeliz 1 de mayo.");
-}
-
-function typeFinal(text){
+// texto final
+function typeFinal(text,callback){
   let i=0;
   let el=document.getElementById("final");
   let interval=setInterval(()=>{
     el.innerHTML+=text.charAt(i);
     i++;
-    if(i>=text.length) clearInterval(interval);
+    if(i>=text.length){
+      clearInterval(interval);
+      if(callback) callback();
+    }
   },60);
+}
+
+// confetti
+function showConfetti(){
+  const duration = 4000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({ particleCount: 6, spread: 70, origin: { y: 0.6 } });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
 }
 
 </script>
